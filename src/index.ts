@@ -1,10 +1,14 @@
-import { CommandoClient } from 'discord.js-commando';
+import path from 'path';
+import AiteClient from './client';
 
-const client = new CommandoClient({
+const client = new AiteClient({
   owner: '106162668032802816',
   commandPrefix: 'a!',
 });
 
-client.registry.registerDefaults();
+client.registry
+  .registerGroup('aite')
+  .registerDefaults()
+  .registerCommandsIn(path.join(__dirname, 'commands'));
 
 client.login(process.env.AITE_DISCORD_TOKEN);
