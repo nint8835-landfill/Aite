@@ -33,7 +33,7 @@ export default class ProcessRegistry {
       );
       embed.addField(
         'Command',
-        `\`\`\`${Util.escapeMarkdown(processInfo.command)}\`\`\``,
+        `\`\`\`${Util.escapeMarkdown(processInfo.command, true)}\`\`\``,
       );
       embed.setAuthor(
         `${processInfo.message.author.username}#${processInfo.message.author.discriminator}`,
@@ -56,7 +56,7 @@ export default class ProcessRegistry {
     const embed = new RichEmbed({ title: 'Process Started' });
     embed.setColor('GOLD');
     embed.addField('PID', childProcess.pid);
-    embed.addField('Command', `\`\`\`${Util.escapeMarkdown(args)}\`\`\``);
+    embed.addField('Command', `\`\`\`${Util.escapeMarkdown(args, true)}\`\`\``);
     embed.setAuthor(
       `${message.author.username}#${message.author.discriminator}`,
       message.author.avatarURL,
@@ -69,7 +69,10 @@ export default class ProcessRegistry {
       });
       embed.setColor(code === 0 ? 'GREEN' : 'RED');
       embed.addField('Exit Code', code);
-      embed.addField('Command', `\`\`\`${Util.escapeMarkdown(args)}\`\`\``);
+      embed.addField(
+        'Command',
+        `\`\`\`${Util.escapeMarkdown(args, true)}\`\`\``,
+      );
       embed.addField('PID', childProcess.pid);
       embed.setFooter(ProcessRegistry.generateStartedDiff(startTime));
       embed.setAuthor(
@@ -101,9 +104,12 @@ export default class ProcessRegistry {
           });
           embed.setColor('GREY');
           embed.setDescription(
-            `\`\`\`\n${Util.escapeMarkdown(splitMessage)}\n\`\`\``,
+            `\`\`\`\n${Util.escapeMarkdown(splitMessage, true)}\n\`\`\``,
           );
-          embed.addField('Command', `\`\`\`${Util.escapeMarkdown(args)}\`\`\``);
+          embed.addField(
+            'Command',
+            `\`\`\`${Util.escapeMarkdown(args, true)}\`\`\``,
+          );
           embed.setFooter(ProcessRegistry.generateStartedDiff(startTime));
           embed.setAuthor(
             `${message.author.username}#${message.author.discriminator}`,
