@@ -24,6 +24,25 @@ export default class ProcessRegistry {
       .humanize()} ago.`;
   }
 
+  async listProcesses(message: CommandMessage): Promise<void> {
+    for (const [pid, processInfo] of Object.entries(this.processes)) {
+      const embed = new RichEmbed({ title: `Process ${pid}` });
+      embed.addField(
+        'Time Started',
+        ProcessRegistry.generateStartedDiff(processInfo.startTime),
+      );
+      embed.addField(
+        'Command',
+        `\`\`\`${Util.escapeMarkdown(processInfo.command)}\`\`\``,
+      );
+      embed.setAuthor(
+        `${processInfo.message.author.username}#${processInfo.message.author.discriminator}`,
+        processInfo.message.author.avatarURL,
+      );
+      await message.embed(embed);
+    }
+  }
+
   spawnProcess(args: string, message: CommandMessage): ChildProcess {
     const childProcess = spawn(args, { shell: true, stdio: 'pipe' });
     const startTime = moment();
@@ -49,7 +68,7 @@ export default class ProcessRegistry {
         title: 'Process Exited',
       });
       embed.setColor(code === 0 ? 'GREEN' : 'RED');
-      embed.addField('Exit code', code);
+      embed.addField('Exit Code', code);
       embed.addField('Command', `\`\`\`${Util.escapeMarkdown(args)}\`\`\``);
       embed.addField('PID', childProcess.pid);
       embed.setFooter(ProcessRegistry.generateStartedDiff(startTime));
@@ -58,6 +77,7 @@ export default class ProcessRegistry {
         message.author.avatarURL,
       );
       message.embed(embed);
+      delete this.processes[childProcess.pid];
     });
 
     let output = '';
@@ -77,7 +97,7 @@ export default class ProcessRegistry {
         }
         for (const splitMessage of messages) {
           const embed = new RichEmbed({
-            title: `New Output from PID ${childProcess.pid}`,
+            title: `Output from PID ${childProcess.pid}`,
           });
           embed.setColor('GREY');
           embed.setDescription(
