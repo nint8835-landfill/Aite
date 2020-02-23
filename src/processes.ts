@@ -18,6 +18,12 @@ export default class ProcessRegistry {
     this.processes = {};
   }
 
+  static generateStartedDiff(startTime: moment.Moment): string {
+    return `Started ${moment
+      .duration(startTime.diff(moment()))
+      .humanize()} ago.`;
+  }
+
   spawnProcess(args: string, message: CommandMessage): ChildProcess {
     const childProcess = spawn(args, { shell: true, stdio: 'pipe' });
     const startTime = moment();
@@ -32,6 +38,10 @@ export default class ProcessRegistry {
     embed.setColor('GOLD');
     embed.addField('PID', childProcess.pid);
     embed.addField('Command', `\`\`\`${Util.escapeMarkdown(args)}\`\`\``);
+    embed.setAuthor(
+      `${message.author.username}#${message.author.discriminator}`,
+      message.author.avatarURL,
+    );
     message.embed(embed);
 
     childProcess.on('exit', code => {
@@ -42,8 +52,10 @@ export default class ProcessRegistry {
       embed.addField('Exit code', code);
       embed.addField('Command', `\`\`\`${Util.escapeMarkdown(args)}\`\`\``);
       embed.addField('PID', childProcess.pid);
-      embed.setFooter(
-        `Started ${moment.duration(startTime.diff(moment())).humanize()} ago.`,
+      embed.setFooter(ProcessRegistry.generateStartedDiff(startTime));
+      embed.setAuthor(
+        `${message.author.username}#${message.author.discriminator}`,
+        message.author.avatarURL,
       );
       message.embed(embed);
     });
@@ -72,10 +84,10 @@ export default class ProcessRegistry {
             `\`\`\`\n${Util.escapeMarkdown(splitMessage)}\n\`\`\``,
           );
           embed.addField('Command', `\`\`\`${Util.escapeMarkdown(args)}\`\`\``);
-          embed.setFooter(
-            `Started ${moment
-              .duration(startTime.diff(moment()))
-              .humanize()} ago.`,
+          embed.setFooter(ProcessRegistry.generateStartedDiff(startTime));
+          embed.setAuthor(
+            `${message.author.username}#${message.author.discriminator}`,
+            message.author.avatarURL,
           );
           message.embed(embed);
         }
